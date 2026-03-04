@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrinho de Compras - Pet Shop</title>
+    <link rel="stylesheet" href="css/style.css">
+    
+    <style>
+        /* --- CSS (Estilos) --- */
+        :root {
+            --primary-color: #ff914d;
+            --secondary-color: #333;
+            --bg-color: #f4f4f4;
+            --white: #ffffff;
+            --success: #28a745;
+            --danger: #dc3545;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: var(--white);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: var(--secondary-color);
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        /* Tabela de Produtos */
+        .cart-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .cart-table th,
+        .cart-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .cart-table th {
+            background-color: var(--primary-color);
+            color: var(--white);
+        }
+
+        .cart-table tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        .product-name {
+            font-weight: bold;
+            color: var(--secondary-color);
+        }
+
+        .product-price {
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .quantity-btn {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        .quantity-btn:hover {
+            background-color: var(--primary-color);
+        }
+
+        .quantity-display {
+            font-weight: bold;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .remove-btn {
+            background-color: var(--danger);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .remove-btn:hover {
+            background-color: #c82333;
+        }
+
+        /* Total */
+        .cart-total {
+            background-color: var(--secondary-color);
+            color: var(--white);
+            padding: 20px;
+            border-radius: 5px;
+            text-align: right;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+
+        .cart-total span {
+            color: var(--primary-color);
+            font-size: 2rem;
+        }
+
+        /* Botões de Ação */
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.3s;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .btn-print {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .btn-print:hover {
+            background-color: #218838;
+        }
+
+        .btn-clear {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .btn-clear:hover {
+            background-color: #c82333;
+        }
+
+        .btn-save {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-save:hover {
+            background-color: #e67e22;
+        }
+
+        /* Notificação */
+        #toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 5px;
+            padding: 16px;
+            position: fixed;
+            z-index: 1000;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            font-size: 17px;
+        }
+
+        #toast.show {
+            visibility: visible;
+            animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        }
+
+        @keyframes fadein {
+            from {bottom: 0; opacity: 0;}
+            to {bottom: 30px; opacity: 1;}
+        }
+
+        @keyframes fadeout {
+            from {bottom: 30px; opacity: 1;}
+            to {bottom: 0; opacity: 0;}
+        }
+
+        /* Área de Impressão */
+        #printable-area {
+            display: none;
+        }
+
+        @media print {
+            body * { visibility: hidden; }
+            #printable-area, #printable-area * { visibility: visible; }
+            #printable-area {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                padding: 20px;
+                background: white;
+            }
+            .no-print { display: none; }
+        }
+
+        /* Área de Impressão (Oculto na tela) */
+        #printable-area {
+            display: none;
+        }
+
+        /* Mensagem de Carrinho Vazio */
+        .empty-cart {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+            font-size: 1.2rem;
+        }
+        /* Botão Voltar */
+.back-button-container {
+    margin-bottom: 20px;
+}
+
+.btn-back {
+    display: inline-block;
+    background-color: var(--secondary-color);
+    color: white;
+    padding: 12px 25px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: all 0.3s;
+}
+
+.btn-back:hover {
+    background-color: var(--primary-color);
+    transform: translateX(-5px);
+}
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>🛒 Carrinho de Compras</h1>
+        <div class="back-button-container no-print">
+    <a href="index.html" class="btn-back">⬅️ Voltar para Produtos</a>
+</div>
+        
+        <!-- Tabela de Produtos -->
+        <table class="cart-table" id="cart-table">
+            <thead>
+                <tr>
+                    <th>Produto</th>
+                    <th>Preço Unit.</th>
+                    <th>Quantidade</th>
+                    <th>Subtotal</th>
+                    <th>Ação</th>
+                </tr>
+            </thead>
+            <tbody id="cart-items">
+                <!-- Produtos serão inseridos aqui via JavaScript -->
+            </tbody>
+        </table>
+
+        <div id="empty-cart-message" class="empty-cart">
+            Seu carrinho está vazio. Adicione produtos para continuar.
+        </div>
+
+        <!-- Total -->
+        <div class="cart-total no-print">
+            Total: R$ <span id="cart-total">0,00</span>
+        </div>
+
+        <!-- Botões de Ação -->
+        <div class="action-buttons no-print">
+            <button class="btn btn-print" onclick="printOrder()">🖨️ Imprimir Pedido</button>
+            <button class="btn btn-save" onclick="saveCart()">💾 Salvar Carrinho</button>
+            <button class="btn btn-clear" onclick="clearCart()">🗑️ Limpar Carrinho</button>
+        </div>
+    </div>
+
+    <!-- Notificação -->
+    <div id="toast">Operação realizada com sucesso!</div>
+
+    <!-- Área de Impressão (Oculto na tela) -->
+    <div id="printable-area">
+        <h1 style="text-align: center;">Pet Shop Amigo Fiel</h1>
+        <h2 style="text-align: center;">Pedido de Compra</h2>
+        <p>Data: <span id="print-date"></span></p>
+        <hr>
+        <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+            <thead>
+                <tr style="background: #f4f4f4;">
+                    <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">Produto</th>
+                    <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">Qtd</th>
+                    <th style="padding: 10px; border: 1px solid #ddd; text-align: right;">Valor</th>
+                </tr>
+            </thead>
+            <tbody id="print-items"></tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="2" style="padding: 10px; border: 1px solid #ddd; text-align: right; font-weight: bold;">TOTAL</td>
+                    <td style="padding: 10px; border: 1px solid #ddd; text-align: right; font-weight: bold; font-size: 1.2rem;" id="print-total"></td>
+                </tr>
+            </tfoot>
+        </table>
+        <hr>
+        <p style="text-align: center; margin-top: 30px;">Obrigado pela preferência! 🐾</p>
+    </div>
+
+
+    <script>
+        /* --- JavaScript (Lógica) --- */
+        
+        let cart = [];
+
+        // Carregar carrinho ao iniciar
+        window.onload = function() {
+            loadCart();
+        };
+
+        // Adicionar produto ao carrinho (chamado do arquivo principal)
+        function addToCartFromMain(productName, price) {
+            const existingItem = cart.find(item => item.name === productName);
+            
+            if (existingItem) {
+                existingItem.quantity++;
+            } else {
+                cart.push({ name: productName, price: price, quantity: 1 });
+            }
+            
+            updateCart();
+            saveCart();
+            showToast(`"${productName}" adicionado ao carrinho!`);
+        }
+
+        // Atualizar carrinho na tela
+        function updateCart() {
+            const cartItems = document.getElementById('cart-items');
+            const emptyMessage = document.getElementById('empty-cart-message');
+            const cartTotal = document.getElementById('cart-total');
+            
+            cartItems.innerHTML = '';
+            let total = 0;
+
+            if (cart.length === 0) {
+                emptyMessage.style.display = 'block';
+            } else {
+                emptyMessage.style.display = 'none';
+                
+                cart.forEach((item, index) => {
+                    const subtotal = item.price * item.quantity;
+                    total += subtotal;
+
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="product-name">${item.name}</td>
+                        <td class="product-price">R$ ${item.price.toFixed(2)}</td>
+                        <td>
+                            <div class="quantity-controls">
+                                <button class="quantity-btn" onclick="changeQuantity(${index}, -1)">-</button>
+                                <span class="quantity-display">${item.quantity}</span>
+                                <button class="quantity-btn" onclick="changeQuantity(${index}, 1)">+</button>
+                            </div>
+                        </td>
+                        <td class="product-price">R$ ${subtotal.toFixed(2)}</td>
+                        <td>
+                            <button class="remove-btn" onclick="removeItem(${index})">Remover</button>
+                        </td>
+                    `;
+                    cartItems.appendChild(row);
+                });
+            }
+
+            cartTotal.innerText = total.toFixed(2);
+        }
+
+        // Alterar quantidade
+        function changeQuantity(index, change) {
+            cart[index].quantity += change;
+            
+            if (cart[index].quantity <= 0) {
+                cart.splice(index, 1);
+            }
+            
+            updateCart();
+            saveCart();
+        }
+
+        // Remover item
+        function removeItem(index) {
+            cart.splice(index, 1);
+            updateCart();
+            saveCart();
+            showToast('Produto removido!');
+        }
+
+        // Limpar carrinho
+        function clearCart() {
+            if (confirm('Tem certeza que deseja limpar todo o carrinho?')) {
+                cart = [];
+                updateCart();
+                saveCart();
+                showToast('Carrinho limpo!');
+            }
+        }
+
+        // Salvar no localStorage
+        function saveCart() {
+            localStorage.setItem('petshop_cart', JSON.stringify(cart));
+            showToast('Carrinho salvo!');
+        }
+
+        // Carregar do localStorage
+        function loadCart() {
+            const savedCart = localStorage.getItem('petshop_cart');
+            if (savedCart) {
+                cart = JSON.parse(savedCart);
+                updateCart();
+            }
+        }
+
+        // Imprimir pedido
+       // Imprimir pedido (CORRIGIDO)
+function printOrder() {
+    if (cart.length === 0) {
+        alert('Seu carrinho está vazio!');
+        return;
+    }
+
+    // Preencher a área de impressão
+    const printItems = document.getElementById('print-items');
+    const printTotal = document.getElementById('print-total');
+    const printDate = document.getElementById('print-date');
+
+    // Limpar área anterior
+    printItems.innerHTML = '';
+    
+    let total = 0;
+
+    // Adicionar cada item
+    cart.forEach(item => {
+        const subtotal = item.price * item.quantity;
+        total += subtotal;
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td style="padding: 10px; border: 1px solid #ddd;">${item.name}</td>
+            <td style="padding: 10px; border: 1px solid #ddd; text-align: center;">${item.quantity}</td>
+            <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">R$ ${subtotal.toFixed(2)}</td>
+        `;
+        printItems.appendChild(row);
+    });
+
+    // Atualizar total
+    printTotal.innerText = 'R$ ' + total.toFixed(2);
+    
+    // Atualizar data
+    printDate.innerText = new Date().toLocaleString('pt-BR');
+
+    // Mostrar área de impressão temporariamente
+    const printableArea = document.getElementById('printable-area');
+    printableArea.style.display = 'block';
+
+    // Aguardar renderização e imprimir
+    setTimeout(() => {
+        window.print();
+        // Esconder após imprimir
+        printableArea.style.display = 'none';
+    }, 500);
+}
+        // Mostrar notificação
+        function showToast(message) {
+            var x = document.getElementById("toast");
+            x.innerText = message;
+            x.className = "show";
+            setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+        }
+
+        
+    </script>
+</body>
+</html>

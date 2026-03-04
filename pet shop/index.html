@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PetShop — Itens Recomendados</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<header>PetShop — Sugestões para seu Pet</header>
+
+<!-- CARROSSEL -->
+<div class="carrossel">
+
+    <div class="slides">
+        
+        <img src="imagens/promocao2.jpg" alt="promocao2">
+        <img src="imagens/promocao3.jpg" alt="promocao3">
+        <img src="imagens/promocao4.jpg" alt="promocao4">
+</div>
+       <button class="esquerda"></button>
+       <button class="direita"></button>
+</div>
+</div>
+
+<!-- FILTROS -->
+<div class="filters">
+<button onclick="filterItems('all')">Todos</button>
+<button onclick="filterItems('dog')">Cachorros</button>
+<button onclick="filterItems('cat')">Gatos</button>
+<button onclick="filterItems('accessory')">Acessórios</button>
+<button onclick="filterItems('hygiene')">Higiene</button>
+</div>
+
+<!-- PRODUTOS -->
+<div class="container">
+<div class="grid" id="productGrid">
+
+<div class="card" data-category="dog">
+<img src="imagens/racaopremium.jpg" alt="">
+<h3>Ração Premium Adultos</h3>
+<p class="price">R$ 89,90</p>
+<a class="btn" href="#" onclick="enviarAoCarrinho('Ração Premium Adultos', 89.90); return false;">Comprar</a>
+</div>
+
+<div class="card" data-category="dog accessory">
+<img src=imagens/mordedor.jpg alt="">
+<h3>Mordedor UltraFlex</h3>
+<p class="price">R$ 29,90</p>
+<a class="btn" href="#" onclick="enviarAoCarrinho('Mordedor UltraFlex', 29.90); return false;">Comprar</a>
+</div>
+
+<div class="card" data-category="hygiene dog cat">
+<img src="imagens/shampoo.jpg" alt="">
+<h3>Shampoo Antialérgico</h3>
+<p class="price">R$ 34,90</p>
+<a class="btn" href="#" onclick="enviarAoCarrinho('Shampoo Antialérgico', 34.90); return false;">Comprar</a>
+</div>
+
+<div class="card" data-category="dog accessory">
+<img src="imagens/coleira.jpg" alt="">
+<h3>Coleira Ajustável Neon</h3>
+<p class="price">R$ 45,00</p>
+<a class="btn" href="#" onclick="enviarAoCarrinho('Coleira Ajustável Neon', 45.00); return false;">Comprar</a>
+</div>
+
+<div class="card" data-category="cat accessory">
+<img src="imagens/arranhador.jpg" alt="">
+<h3>Arranhador Compacto para Gatos</h3>
+<p class="price">R$ 119,00</p>
+<a class="btn" href="#" onclick="enviarAoCarrinho('Arranhador Compacto para Gatos', 119.00); return false;">Comprar</a>
+</div>
+
+<div class="card" data-category="cat hygiene">
+<img src="imagens/areia.jpg" alt="">
+<h3>Areia Higiênica Premium</h3>
+<p class="price">R$ 21,90</p>
+<a class="btn" href="#" onclick="enviarAoCarrinho('Areia Higiênica Premium', 21.90); return false;">Comprar</a>
+</div>
+
+</div>
+</div>
+
+<script src="js/script.js"></script>
+<!-- Script para enviar ao carrinho -->
+<script>
+    // Função que será chamada pelo botão "Comprar"
+    function enviarAoCarrinho(nomeProduto, preco) {
+        // Abre o arquivo do carrinho e envia os dados
+        window.open('carrinho.html', '_blank');
+        
+        // Salva no localStorage para o carrinho carregar
+        let cart = JSON.parse(localStorage.getItem('petshop_cart') || '[]');
+        const existingItem = cart.find(item => item.name === nomeProduto);
+        
+        if (existingItem) {
+            existingItem.quantity++;
+        } else {
+            cart.push({ name: nomeProduto, price: preco, quantity: 1 });
+        }
+        
+        localStorage.setItem('petshop_cart', JSON.stringify(cart));
+        alert('Produto adicionado ao carrinho!');
+    }
+</script></body>
+</html>
