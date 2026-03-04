@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="author" content="Wanderley Lopes Batista">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pet Shop Gourmet - Sistema</title>
+
+  <!-- Ícones modernos -->
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <link rel="stylesheet" href="css/estilo_petshop.css">
+</head>
+
+<body>
+
+  <header class="menu">
+
+    <div class="logo">
+      <i class="fa-solid fa-paw"></i>
+      <span>Pet Shop Gourmet</span>
+    </div>
+
+    <nav class="menu-secundario">
+  <button onclick="mudarPagina('index.html1', this)">Página Inicial</button>
+  <button onclick="mudarPagina('cadastro_animais.html', this)">Cadastro de Animais</button>
+  <button onclick="mudarPagina('index.html', this)">Serviços</button>
+  <button onclick="mudarPagina('contato.html', this)">Contatos</button>
+</nav>
+
+  </header>
+
+  <iframe name="principal" id="frame" src="conteudo.html"></iframe>
+
+  <script src="js/petshop.js"></script>
+
+</body>
+</html>
